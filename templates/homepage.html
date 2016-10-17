@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <ul class=quizzes>
+    {% for quiz in quizzes %}
+      <li><h2><a href="{{ url_for('show_quiz', quizID = quiz.id)}}">{{ quiz.title }}</a></h2>{{ quiz.description|safe }}
+    {% else %}
+      <li><em>Unbelievable.  No Quiz here so far</em>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

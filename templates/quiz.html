@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <a href="{{ url_for('show_homepage') }}">Back</a>
+  	<h3> {{ quiz.title }} </h3>
+    <ol class=questions>
+    {% for question in questions %}
+      <li><a href="{{ url_for('show_question', quizID = quiz.id, questionID = question.id)}}">{{ question.question }}</a>
+    {% else %}
+      <li><em>No question here so far</em>
+    {% endfor %}
+    </ol>
+  {% endif %}
+{% endblock %}
