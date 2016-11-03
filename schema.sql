@@ -1,4 +1,6 @@
 drop table if exists t_user;
+drop table if exists t_course;
+drop table if exists t_section;
 drop table if exists t_quiz;
 drop table if exists t_question;
 drop table if exists t_quiz_question;
@@ -12,8 +14,22 @@ create table t_user (
 	role integer not null -- 1 student 2 teacher 3 admin
 );
 
+create table t_course (
+	id integer primary key autoincrement,
+	name text not null,
+	description text
+);
+
+create table t_section (
+	id integer primary key autoincrement,
+	courseID integer not null,
+	name text not null,
+	description text
+);
+
 create table t_quiz (
 	id integer primary key autoincrement,
+	sectionID integer not null,
 	title text not null,
 	description text
 );
@@ -46,9 +62,15 @@ insert into t_user (username, password, role) values ("Stu1", "123", 1);
 insert into t_user (username, password, role) values ("Stu2", "123", 1);
 insert into t_user (username, password, role) values ("Stu3", "123", 1);
 
-insert into t_quiz (title, description) values ("Quiz 1", "It's a test.");
-insert into t_quiz (title, description) values ("Quiz 2", "It's a test.");
-insert into t_quiz (title, description) values ("Quiz 3", "It's a test.");
+insert into t_user (username, password, role) values ("Tea1", "123", 2);
+
+insert into t_course (name, description) values ("Course 1", "Course 1 description");
+
+insert into t_section (courseId, name, description) values (1, "Section 1", "Section 1 description");
+
+insert into t_quiz (sectionId, title, description) values (1, "Quiz 1", "It's a test.");
+insert into t_quiz (sectionId, title, description) values (1, "Quiz 2", "It's a test.");
+insert into t_quiz (sectionId, title, description) values (1, "Quiz 3", "It's a test.");
 
 insert into t_question (question, givenCode, graderCode) values 
 (

@@ -5,7 +5,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 
 from checker import Checker
 
-from classes import Quiz, Question, SubmitHistory
+from classes import Course, Section, Quiz, Question, SubmitHistory
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -52,7 +52,7 @@ def login():
 	if request.method == 'POST':
 		username = request.form['username']
 		db = get_db()
-		cur = db.execute('select id, password from t_user where username=?', (request.form['username'],))
+		cur = db.execute('select id, password, role from t_user where username=?', (request.form['username'],))
 		result = cur.fetchall()
 		if len(result) == 1:
 			if request.form['password'] != result[0][1]:
@@ -61,6 +61,7 @@ def login():
 				session['logged_in'] = True
 				session['userid'] = result[0][0]
 				session['username'] = username
+				session['role'] = result[0][2]
 				flash('You were logged in')
 				return redirect(url_for('show_homepage'))
 		else:
@@ -73,8 +74,39 @@ def logout():
     session.pop('logged_in', None)
     session.pop('userid', None)
     session.pop('username', None)
+    session.pop('role',None)
     flash('You were logged out')
     return redirect(url_for('login'))
+
+@app.route('/add_entity', methods=['GET','POST'])
+def add_entity():
+	etype = request.args.get('entity_type')
+	sid = request.args.get('super_entity_id')
+	if request.method == 'POST':
+		name = request.form['name']
+		description = request.form['description']
+		db = get_db()
+		
+		if etype == 'Course':
+			db.execute("insert into t_course (name, description) values (?,?)", (name, description))
+			db.commit()
+			flash('Success')
+			return redirect(url_for('show_homepage'))
+		if etype == 'Section':
+			db.execute("insert into t_section (courseID, name, description) values (?,?,?)", (sid, name, description))
+			db.commit()
+			flash('Success')
+			return redirect(url_for('show_course', courseID=sid))
+		elif etype == 'Quiz':
+			db.execute("insert into t_quiz (sectionID, title, description) values (?,?,?)", (sid, name, description))
+			db.commit()
+			flash('Success')
+			return redirect(url_for('show_section', sectionID=sid))
+		else:
+			flash('unsupported type error')
+			return redirect(url_for('show_homepage'))
+	else:
+		return render_template('add_entity.html', entity_type = etype, super_entity_id = sid)
 
 @app.route('/')
 def show_homepage():
@@ -82,9 +114,35 @@ def show_homepage():
 		return redirect(url_for('login'))
 
 	db = get_db()
-	quizzes = Quiz.getAllQuizzes(db)
+	courses = Course.getAllCourses(db)
 
-	return render_template('homepage.html', quizzes = quizzes)
+	return render_template('homepage.html', courses = courses)
+
+@app.route('/show_course')
+def show_course():
+	if not session.get('logged_in'):
+		return redirect(url_for('login'))
+
+	courseID = int(request.args.get('courseID'))
+	db = get_db()
+	
+	course = Course.getCourseFromDB(courseID,db)
+	sections = course.getSections(db)
+
+	return render_template('course.html', course = course, sections = sections)
+
+@app.route('/show_section')
+def show_section():
+	if not session.get('logged_in'):
+		return redirect(url_for('login'))
+
+	sectionID = int(request.args.get('sectionID'))
+	db = get_db()
+	
+	section = Section.getSectionFromDB(sectionID,db)
+	quizzes = section.getQuizzes(db)
+
+	return render_template('section.html', section = section, quizzes = quizzes)
 
 @app.route('/show_quiz')
 def show_quiz():

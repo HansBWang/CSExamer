@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <h4>{{ course.name }}</h4>
+    <a href="{{ url_for('show_homepage') }}">Back</a><br><br>
+    {% if session.role > 1 %}
+      <a href="{{ url_for('add_entity', entity_type ='Section', super_entity_id=course.id) }}">New Section</a>
+    {% endif %}
+    <ul class=quizzes>
+    {% for section in sections %}
+      <li><h2><a href="{{ url_for('show_section', sectionID = section.id)}}">{{ section.name }}</a></h2>{{ section.description|safe }}
+    {% else %}
+      <li><em>No Section in this Course so far</em>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

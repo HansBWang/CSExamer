@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <h4>{{ section.name }}</h4>
+    <a href="{{ url_for('show_course', courseID = section.courseID) }}">Back</a><br><br>
+    {% if session.role > 1 %}
+      <a href="{{ url_for('add_entity', entity_type ='Quiz', super_entity_id=section.id) }}">New Quiz</a>
+    {% endif %}
+    <ul class=quizzes>
+    {% for quiz in quizzes %}
+      <li><h2><a href="{{ url_for('show_quiz', quizID = quiz.id)}}">{{ quiz.title }}</a></h2>{{ quiz.description|safe }}
+    {% else %}
+      <li><em>No Quiz in this section</em>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

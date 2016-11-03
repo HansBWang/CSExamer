@@ -1,8 +1,72 @@
+class Course(object):
+	"""docstring for Course"""
+	def __init__(self, id, name, description):
+		super(Course, self).__init__()
+		self.id = id
+		self.name = name
+		self.description = description
+		self.sections = None
+
+	def getSections(self, db):
+		if self.sections is None:
+			self.sections = []
+			cur = db.execute('select id, courseID, name, description from t_section where courseID='+str(self.id))
+			results = cur.fetchall()
+			for result in results:
+				section = Section(result[0],result[1],result[2],result[3])
+				self.sections.append(section)
+		return self.sections
+
+	@classmethod	
+	def getCourseFromDB(self, id, db):
+		cur = db.execute('select name, description from t_course where id=?', (id,))
+		result = cur.fetchone()
+		course = Course(id, result[0], result[1])
+		return course
+
+	@classmethod
+	def getAllCourses(self, db):
+		cur = db.execute('select id, name, description from t_course')
+		result = cur.fetchall()
+		courses = []
+		for data in result:
+			course = Course(data[0],data[1],data[2])
+			courses.append(course)
+		return courses
+
+class Section(object):
+	"""docstring for Course"""
+	def __init__(self, id, courseID, name, description):
+		super(Section, self).__init__()
+		self.id = id
+		self.courseID = courseID
+		self.name = name
+		self.description = description
+		self.quizzes = None
+
+	def getQuizzes(self, db):
+		if self.quizzes is None:
+			self.quizzes = []
+			cur = db.execute('select id, sectionID, title, description from t_quiz where sectionID='+str(self.id))
+			results = cur.fetchall()
+			for result in results:
+				quiz = Quiz(result[0],result[1],result[2],result[3])
+				self.quizzes.append(quiz)
+		return self.quizzes
+
+	@classmethod	
+	def getSectionFromDB(self, id, db):
+		cur = db.execute('select courseID, name, description from t_section where id=?', (id,))
+		result = cur.fetchone()
+		section = Section(id, result[0], result[1], result[2])
+		return section
+
 class Quiz(object):
 	"""docstring for Quiz"""
-	def __init__(self, id, title, description):
+	def __init__(self, id, sectionID, title, description):
 		super(Quiz, self).__init__()
 		self.id = id
+		self.sectionID = sectionID
 		self.title = title
 		self.description = description
 		self.questions = None
@@ -20,20 +84,20 @@ class Quiz(object):
 	
 	@classmethod
 	def getQuizFromDB(self, id, db):
-		cur = db.execute('select title, description from t_quiz where id=?', (id,))
+		cur = db.execute('select sectionID,title, description from t_quiz where id=?', (id,))
 		result = cur.fetchone()
-		quiz = Quiz(id, result[0], result[1])
+		quiz = Quiz(id, result[0], result[1], result[2])
 		return quiz
 	
-	@classmethod
-	def getAllQuizzes(self, db):
-		cur = db.execute('select id, title, description from t_quiz')
-		result = cur.fetchall()
-		quizzes = []
-		for data in result:
-			quiz = Quiz(data[0],data[1],data[2])
-			quizzes.append(quiz)
-		return quizzes
+	# @classmethod
+	# def getAllQuizzes(self, db):
+	# 	cur = db.execute('select id, title, description from t_quiz')
+	# 	result = cur.fetchall()
+	# 	quizzes = []
+	# 	for data in result:
+	# 		quiz = Quiz(data[0],data[1],data[2])
+	# 		quizzes.append(quiz)
+	# 	return quizzes
 
 class Question(object):
 	"""docstring for Question"""
