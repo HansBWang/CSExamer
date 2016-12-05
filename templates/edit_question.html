@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <a href="{{ url_for('show_question_pool', courseID = courseID) }}">Back</a>
+    <br>
+    <br>
+    <form action="{{ url_for('edit_question', courseID = courseID, questionID = question.id) }}" method=post>
+<!--       Title:<input type="text" name="title" value=""><br>
+      Tags:<input type="text" name="tags" value=""><br> -->
+      Question:<br>
+      <textarea name=question rows=10 cols=60>{{question.question}}</textarea><br>
+      Given Code:<br>
+      <textarea name=givenCode rows=20 cols=60>{{question.givenCode}}</textarea><br>
+      Grader Code:<br>
+      <textarea name=graderCode rows=20 cols=60>{{question.graderCode}}</textarea><br>
+      <input type='submit' name='action' value='cancel'>
+      <input type='submit' name='action' value='save'>
+      <input type='submit' name='action' value='delete'>
+    </form>
+  {% endif %}
+{% endblock %}

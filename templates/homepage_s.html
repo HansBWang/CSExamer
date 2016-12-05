@@ -2,14 +2,11 @@
 {% block body %}
   {% if session.logged_in %}
     <h4>Homepage</h4>
-    {% if session.role > 1 %}
-      <a href="{{ url_for('add_entity', entity_type ='Course', super_entity_id=0) }}">New Course</a>
-    {% endif %}
     <ul class=quizzes>
     {% for course in courses %}
       <li><h2><a href="{{ url_for('show_course', courseID = course.id)}}">{{ course.name }}</a></h2>{{ course.description|safe }}
     {% else %}
-      <li><em>Unbelievable.  No Course here so far</em>
+      <li><em>Unbelievable. No Course here so far</em>
     {% endfor %}
     </ul>
   {% endif %}

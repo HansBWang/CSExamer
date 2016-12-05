@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <h4> Quizzes - {{ course.name }} </h4>
+    <a href="{{ url_for('show_course', courseID = course.id) }}">Back</a>
+    <a href="{{ url_for('new_quiz', courseID = course.id) }}">New Quiz</a><br><br>
+    <!-- <a href="{{ url_for('new_question', courseID = course.id) }}">New Quiz</a><br><br> -->
+
+    Quizzes:<br>
+
+    <ol class=questions>
+    {% for quiz in quizzes %}
+      <li><a href="">{{ quiz.title }}</a>
+    {% else %}
+      <li><em>No Quiz here so far</em>
+    {% endfor %}
+    </ol>
+  {% endif %}
+{% endblock %}
