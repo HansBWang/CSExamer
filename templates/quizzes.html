@@ -10,7 +10,7 @@
 
     <ol class=questions>
     {% for quiz in quizzes %}
-      <li><a href="">{{ quiz.title }}</a>
+      <li><a href="{{url_for('edit_quiz', courseID = course.id, quizID = quiz.id)}}">{{ quiz.title }}</a>
     {% else %}
       <li><em>No Quiz here so far</em>
     {% endfor %}

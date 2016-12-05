@@ -224,6 +224,46 @@ def new_quiz():
 
 	return render_template('new_quiz.html', courseID = courseID, sections = sections, questions = questions)
 
+@app.route('/edit_quiz', methods=['GET','POST'])
+def edit_quiz():
+	if not session.get('logged_in'):
+		return redirect(url_for('login'))
+
+	courseID = int(request.args.get('courseID'))
+	quizID = int(request.args.get('quizID'))
+	db = get_db()
+	quiz = Quiz.getQuizFromDB(quizID,db)
+	course = Course.getCourseFromDB(courseID,db)
+	sections = course.getSections(db)
+	questions = course.getQuestions(db)
+
+	if request.method == 'POST':
+		if request.form['action'] == 'save':
+			quiz.title = request.form['title']
+			quiz.description = request.form['description']
+			sectionIds = request.form.getlist('section')
+			questionIds = request.form.getlist('question')
+			quiz.saveChanges(sectionIds, questionIds, db)
+			flash("Quiz saved!")
+		return redirect(url_for('show_quizzes', courseID=courseID))
+	else:
+		selectedSecIds = quiz.getSectionIds(db)
+		for section in sections:
+			section.check = 0
+			for secId in selectedSecIds:
+				if section.id == secId:
+					section.check = 1
+
+		selectedQIds = quiz.getQuestionIds(db)
+		for question in questions:
+			question.check = 0
+			for qId in selectedQIds:
+				if question.id == qId:
+					question.check = 1
+
+	return render_template('edit_quiz.html', courseID = courseID, quiz = quiz, sections = sections, questions = questions)
+
+
 @app.route('/show_section')
 def show_section():
 	if not session.get('logged_in'):
