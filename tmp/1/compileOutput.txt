@@ -1,0 +1,4 @@
+./tmp/1/Quiz.java:1: error: class Quiz1 is public, should be declared in a file named Quiz1.java
+public class Quiz1 {
+       ^
+1 error

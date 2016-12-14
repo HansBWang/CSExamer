@@ -263,6 +263,24 @@ def edit_quiz():
 
 	return render_template('edit_quiz.html', courseID = courseID, quiz = quiz, sections = sections, questions = questions)
 
+@app.route('/test_question', methods=['GET','POST'])
+def test_question():
+	if not session.get('logged_in'):
+		return redirect(url_for('login'))
+
+	db = get_db()
+	questionID = int(request.args.get('questionID'))
+	question = Question.getQuestionFromDB(questionID,db)
+
+	code = request.form['text']
+
+	if request.method == 'POST':
+		graderCode = question.graderCode
+		checker = Checker()
+		result = checker.runCheck(code,graderCode)
+		render_template('test_question.html', question = question, result = result)
+	
+	return render_template('test_question.html', question = question)
 
 @app.route('/show_section')
 def show_section():

@@ -17,5 +17,6 @@
       <input type='submit' name='action' value='save'>
       <input type='submit' name='action' value='delete'>
     </form>
+    <a href="{{ url_for('test_question', questionID = question.id) }}" target="_blank">Try out</a>
   {% endif %}
 {% endblock %}

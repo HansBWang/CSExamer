@@ -1,8 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <a href="{{ url_for('show_quiz', quizID = quiz.id) }}">Back</a>
-    <form action="{{ url_for('submit_answer', questionID = question.id, quizID = quiz.id) }}" method=post class=add-entry>
+    <form action="{{ url_for('test_question', questionID = question.id) }}" method=post class=add-entry>
       <dl>
         <dt><h3>{{ question.question }}</h3>
         <dd><textarea name=text rows=20 cols=60>{{ question.givenCode }}</textarea>
@@ -10,13 +9,9 @@
       </dl>
     </form>
   {% endif %}
+  {% if result %}
   <ul class=histories>
-  <p><h3>Submission History</h3><p>
-  {% for history in histories %}
-    <li><h4>{{ history.time }} Test Result:</h4><textarea rows=10 cols=60 readonly>{{ history.result|safe }}</textarea>
-    <h5>Your Code:</h5><textarea rows=10 cols=60 readonly>{{ history.answer|safe }}</textarea>
-  {% else %}
-    <li><em>You have no submission yet</em>
-  {% endfor %}
+    <li><h4>Test Result:</h4><textarea rows=10 cols=60 readonly>{{ result|safe }}</textarea>
   </ul>
+  {% endif %}
 {% endblock %}
